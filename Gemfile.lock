@@ -1,0 +1,47 @@
+GIT
+  remote: git@github.com:allspiritseve/selene.git
+  revision: de988963b4ef59f8324457ddbc0c5aded93ffcdf
+  specs:
+    selene (0.3.1)
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+    childprocess (0.3.6)
+      ffi (~> 1.0, >= 1.0.6)
+    coderay (1.0.8)
+    diff-lcs (1.1.3)
+    ffi (1.2.0)
+    libwebsocket (0.1.6.1)
+      websocket
+    method_source (0.8.1)
+    multi_json (1.5.0)
+    pry (0.9.10)
+      coderay (~> 1.0.5)
+      method_source (~> 0.8)
+      slop (~> 3.3.1)
+    rspec (2.12.0)
+      rspec-core (~> 2.12.0)
+      rspec-expectations (~> 2.12.0)
+      rspec-mocks (~> 2.12.0)
+    rspec-core (2.12.2)
+    rspec-expectations (2.12.1)
+      diff-lcs (~> 1.1.3)
+    rspec-mocks (2.12.1)
+    rubyzip (0.9.9)
+    selenium-webdriver (2.26.0)
+      childprocess (>= 0.2.5)
+      libwebsocket (~> 0.1.3)
+      multi_json (~> 1.0)
+      rubyzip
+    slop (3.3.3)
+    websocket (1.0.3)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  pry
+  rspec (~> 2.12)
+  selene!
+  selenium-webdriver

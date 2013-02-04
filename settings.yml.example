@@ -1,0 +1,10 @@
+git:
+  email: 
+  parent_repos_dir:
+    - /path/to_repos
+open_air:
+  user:
+  company:
+  password:
+calendar:
+  dir: /path_to_calendar_dir
