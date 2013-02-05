@@ -82,8 +82,8 @@ mappings << OpenAirMapping.new(
 )
 
 mappings << OpenAirMapping.new(
-  TaskMap.new("other_meetings", "Other Company Meetings"),
-  ProjectMap.new("operations_management", "Operations Management")
+  TaskMap.new("operations_management", "Operations Management"),
+  ProjectMap.new("other_meetings", "Other Company Meetings"),
 )
 
 mappings << OpenAirMapping.new(
@@ -93,7 +93,7 @@ mappings << OpenAirMapping.new(
 
 mappings << OpenAirMapping.new(
   TaskMap.new("internal_tools", "Internal Tools"),
-  ProjectMap.new("other_meetings", "Other Company Meetings")
+  ProjectMap.new("internal_meetings", "Internal Meetings")
 )
 
 mappings << OpenAirMapping.new(
@@ -105,10 +105,10 @@ timesheet.activities.each do |a|
   mapping = mappings.find_mapping(a)
 
   if mapping.nil?
-    binding.pry
+    puts "no mapping for #{a} -- #{a.project_type} / #{a.task_type}"
+  else
+    puts "mapped #{a} to #{mapping.project_text} - #{mapping.task_text}"
   end
-
-  puts "#{mapping.project_text} - #{mapping.task_text}"
 end
 
 client = OpenAirClient.new(company_id, user_id, password, mappings)
