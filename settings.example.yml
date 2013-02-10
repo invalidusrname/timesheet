@@ -1,0 +1,11 @@
+git:
+  email: user@doma.com
+  parent_repos_dir:
+    - /path/to_repos
+open_air:
+  user: your_open_air_account
+  company: company_name
+  password: password
+calendar:
+  dir: /path_to_calendar_dir
+
