@@ -57,11 +57,11 @@ class OpenAirClient
   end
 
   def fill_out_mapping(map, hash)
-    #puts "finding project #{map.project_text}"
+    puts "finding project #{map.project_text}"
 
     o = project_element(map.project_text)
 
-    #puts "found project: #{o.text}"
+    puts "found project: #{o.text}"
 
     s = o.find_element(:xpath, '..')
     row_number = s['id'].split('_').last
@@ -71,11 +71,11 @@ class OpenAirClient
     project_element(map.project_text).click
     pause
 
-    #puts "finding task in row #{row_number}: #{map.task_text}"
+    puts "finding task in row #{row_number}: #{map.task_text}"
 
     o = task_element(row_number)
 
-    #puts "found task: #{o.text}"
+    puts "found task: #{o.text}"
 
     o.find_element(:xpath, '..').click
     pause
@@ -119,8 +119,7 @@ class OpenAirClient
 
       @driver.find_element(:id, "close_save").click
       @driver.switch_to.default_content
-
-      pause
+      pause(5)
     end
   end
 
@@ -132,6 +131,9 @@ class OpenAirClient
     maps = {}
     timesheet.activities.each do |a|
       map = map_for_activity(a)
+
+      # don't be adding activities that can't be mapped to a project/task
+      next if map.nil?
 
       maps[map] = {} unless maps.has_key?(map)
 
