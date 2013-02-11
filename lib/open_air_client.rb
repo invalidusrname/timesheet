@@ -48,8 +48,9 @@ class OpenAirClient
       fill_out_mapping(mapping, hash)
     end
 
+    pause(2)
     @driver.find_element(:name, '_save_grid').click
-    pause(5)
+    pause(4)
   end
 
   def pause(seconds = 1)
@@ -57,29 +58,24 @@ class OpenAirClient
   end
 
   def fill_out_mapping(map, hash)
-    puts "finding project #{map.project_text}"
+    puts "fillind out mapping: #{map.project_text} - #{map.task_text}"
 
-    o = project_element(map.project_text)
+    p_element = find_available_row(map.project_text, map.task_text)
+    puts "found project select: #{p_element.text}"
+    p_element.click
+    pause(2)
 
-    puts "found project: #{o.text}"
+    row_number = p_element['id'].split('_').last
 
-    s = o.find_element(:xpath, '..')
-    row_number = s['id'].split('_').last
+    o = find_project_option(row_number, map.project_text)
+    puts "found project element: #{o.text}"
+    o.click
+    pause(2)
 
-    s.click
-    pause
-    project_element(map.project_text).click
-    pause
-
-    puts "finding task in row #{row_number}: #{map.task_text}"
-
-    o = task_element(row_number)
-
-    puts "found task: #{o.text}"
-
-    o.find_element(:xpath, '..').click
-    pause
-    task_element(row_number).click
+    o = find_task_option(row_number, map.task_text)
+    puts "found task element: #{o.text}"
+    o.click
+    pause(2)
 
     a_map = {
       6 => 3,
@@ -114,12 +110,25 @@ class OpenAirClient
 
       txt = activities.collect { |a| a.to_note } * "<br/>\n"
 
+      if txt == ''
+        txt = activities.first.class.to_s
+      end
+
       text_area.clear
       text_area.send_keys txt
 
+      if activities.first.is_a? GitCommit
+        cd = CommitDay.new(date)
+        activities.each do |a|
+          cd.add_commit a
+        end
+
+        puts cd.duration
+      end
+
       @driver.find_element(:id, "close_save").click
       @driver.switch_to.default_content
-      pause(5)
+      pause(2)
     end
   end
 
@@ -146,24 +155,53 @@ class OpenAirClient
     maps
   end
 
-  def project_element(select_text)
-    xpath = "//option[contains(text(), '#{select_text}')]"
-    element = @driver.find_elements(:xpath, xpath).select do |e|
-      e.selected?
-    end
+  def find_available_row(project_text, task_text)
+    projects = fetch_all_projects.select { |e| e.text.include? project_text }
+    tasks = fetch_all_tasks.select { |e| e.text.include? task_text }
 
-    if element
-      puts "FOUND ELEMENT #{element.first} #{element.first.text} "
-      element.first
+    if projects.size == 1 && tasks.size == 0
+      projects.first
     else
-      puts "UNSELECTED FOUND ELEMENT #{element} #{element.text}"
-      element = first_unselected_element('customer_project_', select_text)
+      first_available_row
     end
   end
 
+  def first_available_row
+    fetch_all_projects.select { |e| e.selected? == false }.first
+  end
+
+  def fetch_all_projects
+    @driver.find_elements(:xpath, "//select[contains(@id, 'customer_project_')]")
+  end
+
+  def fetch_all_tasks
+    @driver.find_elements(:xpath, "//select[contains(@id, 'project_task_')]")
+  end
+
+  def find_project_option(row_number, option_text)
+    project_element(row_number).click
+    pause
+    xpath = "//select[@id='customer_project_#{row_number}']/option"
+    @driver.find_elements(:xpath, xpath).select do |e|
+      e.text.include? option_text
+    end.first
+  end
+
+  def find_task_option(row_number, option_text)
+    task_element(row_number).click
+    pause
+    xpath = "//select[@id='project_task_#{row_number}']/option"
+    @driver.find_elements(:xpath, xpath).select do |e|
+      e.text.include? option_text
+    end.first
+  end
+
+  def project_element(row_number)
+    @driver.find_element(:id, "customer_project_#{row_number}")
+  end
+
   def task_element(row_number)
-    puts "finding text"
-    @driver["project_task_#{row_number}"]
+    @driver.find_element(:id, "project_task_#{row_number}")
   end
 
   def first_unselected_element(option_partial_id, txt)

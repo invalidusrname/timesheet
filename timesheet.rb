@@ -4,6 +4,7 @@ require "bundler/setup"
 require "selene"
 require 'date'
 require './lib/calendar_event'
+require './lib/commit_day'
 require './lib/git_commit'
 require './lib/repo_activity'
 require './lib/open_air_client'
@@ -60,7 +61,7 @@ calendar_events = calendars.collect do |calendar_file|
   events.each do |event|
     if date_range.include?(event.date)
       unless timesheet.has_activity?(event.uuid)
-        timesheet.add_activity event
+        #timesheet.add_activity event
       end
     end
   end

@@ -17,6 +17,7 @@ end
 def git_repos_in_dir(dir)
   Dir.new(dir).entries.collect do |d|
     repo_dir = File.join(dir, d)
+    #`cd #{repo_dir}; git pull`
     repo_dir if File.directory?("#{repo_dir}/.git")
   end.compact
 end
