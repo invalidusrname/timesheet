@@ -29,13 +29,19 @@ class OpenAirClient
 
     date = custom_date(start_date)
 
+    puts "Checking for #{start_date}"
+
     if has_timesheet?(start_date)
+      puts "Opening existing timesheet"
       element = @driver.find_element(:xpath, "//a[contains(text(), 'Timesheet for #{date}')]")
       element.click
     else
+      puts "Creating timesheet"
       element = @driver.find_element(:xpath, "//a[contains(text(), 'New ...')]")
       @driver.execute_script "javascript:openMenu('timesheetmenu')"
+      pause
       element.click
+      pause(3)
 
       @driver.find_elements(:tag_name, 'option').each do |o|
         o.click if o.text == date
@@ -95,18 +101,15 @@ class OpenAirClient
       link_id = "_c#{i}_r#{row_number}"
       note_id = "_c#{i}_r#{row_number}_dot"
 
-      hour_input = @driver.find_elements(:id, link_id).first
+      # click hour field
+      @driver.find_elements(:id, link_id).first.click
+      pause
+
       note_link  = @driver.find_elements(:id, link_id).last
-
-      hour_input.clear
-      hour_input.send_keys 1
-
-      #note = @driver.find_elements(:id, note_id).last
-
       note_link.click
+      pause
 
       @driver.switch_to.frame('timesheet_notes_panel_contents')
-      text_area = @driver.find_element(:id, "tm_notes")
 
       txt = activities.collect { |a| a.to_note } * "<br/>\n"
 
@@ -114,8 +117,17 @@ class OpenAirClient
         txt = activities.first.class.to_s
       end
 
+      pause
+      text_area = @driver.find_element(:id, "tm_notes")
       text_area.clear
       text_area.send_keys txt
+      pause
+
+      @driver.find_element(:id, "close_save").click
+      @driver.switch_to.default_content
+      pause(2)
+
+      hour_input = @driver.find_elements(:id, link_id).first
 
       if activities.first.is_a? GitCommit
         cd = CommitDay.new(date)
@@ -123,12 +135,20 @@ class OpenAirClient
           cd.add_commit a
         end
 
-        puts cd.duration
-      end
+        hrs = (cd.duration / 60.0).round(2)
+        puts "Duration: #{hrs}"
 
-      @driver.find_element(:id, "close_save").click
-      @driver.switch_to.default_content
-      pause(2)
+        if cd.duration > 0
+          hour_input.clear
+          hour_input.send_keys(hrs.to_s)
+        else
+          hour_input.clear
+          hour_input.send_keys 1
+        end
+      else
+        hour_input.clear
+        hour_input.send_keys 1
+      end
     end
   end
 
