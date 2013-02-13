@@ -93,9 +93,12 @@ class OpenAirClient
       5 => 9,
     }
 
+    # FIXME. problem with meetings and commits happening on the same day
     hash.each do |date, activities|
       puts date
       puts activities
+
+      next if activities.size == 0
 
       i = a_map[date.cwday]
       link_id = "_c#{i}_r#{row_number}"
@@ -138,9 +141,11 @@ class OpenAirClient
         hrs = (cd.duration / 60.0).round(2)
         puts "Duration: #{hrs}"
 
-        if cd.duration > 0
-          hour_input.clear
-          hour_input.send_keys(hrs.to_s)
+        if hrs > 0
+          unless hour_input['value'].to_i > hrs.to_i
+            hour_input.clear
+            hour_input.send_keys(hrs.to_s)
+          end
         else
           hour_input.clear
           hour_input.send_keys 1

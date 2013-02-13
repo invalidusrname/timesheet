@@ -61,7 +61,7 @@ calendar_events = calendars.collect do |calendar_file|
   events.each do |event|
     if date_range.include?(event.date)
       unless timesheet.has_activity?(event.uuid)
-        #timesheet.add_activity event
+        timesheet.add_activity event
       end
     end
   end
