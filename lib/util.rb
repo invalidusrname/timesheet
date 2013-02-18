@@ -14,13 +14,17 @@ def determine_end_date(start_date)
   start_date + 6
 end
 
-def git_repos_in_dir(dir)
-  Dir.new(dir).entries.collect do |d|
-    repo_dir = File.join(dir, d)
-    #`cd #{repo_dir}; git pull`
-    repo_dir if File.directory?("#{repo_dir}/.git")
+def git_repos_in_dir(dir, pull_changes = true)
+  Dir.new(dir).entries.collect do |repo_dir|
+    full_repo_path = File.join(dir,repo_dir)
+    full_repo_path if File.directory?(File.join(full_repo_path, '.git'))
   end.compact
 end
+
+def update_repo_dir(dir)
+  `cd #{dir}; git pull origin master`
+end
+
 
 def commit_logs(repo, start_date, end_date, email)
   repo_name = File.basename(repo)

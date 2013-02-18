@@ -1,4 +1,5 @@
 git:
+  pull_changes: true
   email: user@doma.com
   parent_repos_dir:
     - /path/to_repos

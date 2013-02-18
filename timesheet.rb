@@ -33,12 +33,20 @@ password          = open_air_settings['password']
 timesheet = Timesheet.new(date_range.first, date_range.last)
 
 git_repos = y['git']['parent_repos_dir'].collect do |dir|
+  #puts "Checking #{dir} for repos"
   git_repos_in_dir(dir)
 end.flatten
 
 puts "Fetching activities from #{date_range.first} - #{date_range.last}"
 
 git_repos.each do |repo|
+  #puts "Found repo #{File.basename(repo)}"
+
+ if y['git']['pull_changes']
+   puts "pulling changes"
+   `cd #{repo}; git pull`
+ end
+
   name = File.basename(repo)
   #puts "Checking #{name}"
   logs = commit_logs(repo, date_range.first, date_range.last, email)
