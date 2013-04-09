@@ -13,10 +13,13 @@ class OpenAirClient
 
   def login
     @driver.navigate.to @url
-    @driver.find_element(:id, 'login_user_id').send_keys @user_id
-    @driver.find_element(:id, 'login_company_id').send_keys @company_id
-    @driver.find_element(:id, 'login_password').send_keys @password
-    @driver.find_element(:id, 'login_button').submit
+    @driver.find_element(:id, 'input_user').send_keys @user_id
+    @driver.find_element(:id, 'input_company').send_keys @company_id
+    @driver.find_element(:id, 'input_password').send_keys @password
+    @driver.find_element(:id, 'login_form').submit
+
+    pause(5)
+
   end
 
   def custom_date(date)
