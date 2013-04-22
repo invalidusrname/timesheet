@@ -62,8 +62,11 @@ class CalendarEvent
     "[meeting] #{summary}"
   end
 
+  # TODO: switch to ri_cal for recurring events
   def self.events_from_ics(ics_file)
     ical = Selene.parse(File.read(ics_file))
+
+
     ical["vcalendar"].first["vevent"].collect do |event|
       begin
         start_time = Time.parse(event["dtstart"].first)

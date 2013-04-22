@@ -12,12 +12,20 @@ require './lib/mapping'
 require './lib/open_air_mapping'
 require './lib/open_air_mappings'
 require './lib/timesheet'
+require './lib/timesheet_printer'
 require './lib/util'
 
 require 'pry'
+require 'yaml'
 require 'pp'
 
-s   = determine_start_date(ENV['START_DATE'])
+if ARGV[0].to_s.include?("START_DATE")
+  d = ARGV[0].split('=').last
+else
+  d = (ENV['START_DATE'])
+end
+
+s   = determine_start_date(d)
 e   = determine_end_date(s)
 date_range   = (s...e)
 
@@ -46,12 +54,11 @@ git_repos.each do |repo|
    puts "pulling changes"
    `cd #{repo}; git pull`
  end
-
-  name = File.basename(repo)
+ name = File.basename(repo)
   #puts "Checking #{name}"
   logs = commit_logs(repo, date_range.first, date_range.last, email)
   if logs.length > 0
-    puts "[#{name}] #{logs.length} commits found"
+    #puts "[#{name}] #{logs.length} commits found"
     logs.each do |log|
       timesheet.add_activity GitCommit.parse(log)
     end
@@ -69,13 +76,20 @@ calendar_events = calendars.collect do |calendar_file|
   events.each do |event|
     if date_range.include?(event.date)
       unless timesheet.has_activity?(event.uuid)
+        #puts event
         timesheet.add_activity event
       end
     end
   end
 end
 
-puts timesheet.to_s
+#puts timesheet.to_s
+
+p = TimesheetPrinter.new(timesheet)
+
+puts p
+
+exit
 
 # client task
 # Operations Management | All Hands Meetings

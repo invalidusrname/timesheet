@@ -12,9 +12,11 @@ class Timesheet
   end
 
   def activites_by_day
-    (start_date...end_date).collect do |date|
-      activities_for_date(date)
+    dates = {}
+    (start_date...end_date).each do |date|
+      dates[date] = activities_for_date(date)
     end
+    dates
   end
 
   def activities_for_date(date)

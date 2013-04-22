@@ -18,5 +18,15 @@ class CommitDay
       (diff * 24 * 60).to_i
     end
   end
+
+  def by_repo
+    sorted_commits = {}
+    commits.each do |c|
+      sorted_commits[c.repo] = [] unless sorted_commits.has_key? c.repo
+      sorted_commits[c.repo] << c
+    end
+
+    sorted_commits
+  end
 end
 
